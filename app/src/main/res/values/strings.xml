@@ -111,6 +111,8 @@
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
     <string name="refresh">Refresh</string>
 
+    <string name="error_msg">Error in Data Loading</string>
+
 
     <!-- - - - - - - - - - - -->
     <!-- Used by NetworkUtils-->
