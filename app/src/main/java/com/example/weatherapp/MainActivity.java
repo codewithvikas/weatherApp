@@ -1,10 +1,14 @@
 package com.example.weatherapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.data.WeatherPreferences;
@@ -56,6 +60,26 @@ public class MainActivity extends AppCompatActivity {
     void loadWeatherData(String preferredLocation){
         new WeatherAsyncTask(this).execute(preferredLocation);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.forecast,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_refresh:
+                mWeatherTextView.setText("");
+                loadWeatherData(WeatherPreferences.getPreferredWeatherLocation(this));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+                        }
+    }
+
     class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
 
         Context mContext;
