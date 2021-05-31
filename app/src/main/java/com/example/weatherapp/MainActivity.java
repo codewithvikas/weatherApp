@@ -6,9 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.data.WeatherPreferences;
@@ -25,6 +28,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mWeatherTextView;
+    ProgressBar loadingIndicator;
+    TextView errorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
          * do things like set the text of the TextView.
          */
         mWeatherTextView = (TextView) findViewById(R.id.weather_data_tv);
+
+        loadingIndicator = findViewById(R.id.pb_loading_indecator);
+
+        errorTextView = findViewById(R.id.tv_error_display_msg);
 
         // Completed (4) Delete the dummy weather data. You will be getting REAL data from the Internet in this lesson.
         /*
@@ -80,12 +89,28 @@ public class MainActivity extends AppCompatActivity {
                         }
     }
 
+    void showDataView(){
+        mWeatherTextView.setVisibility(View.VISIBLE);
+        errorTextView.setVisibility(View.INVISIBLE);
+    }
+    void showErrorView(){
+        errorTextView.setVisibility(View.VISIBLE);
+        mWeatherTextView.setVisibility(View.INVISIBLE);
+    }
     class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
 
         Context mContext;
         WeatherAsyncTask(Context context){
             mContext = context;
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingIndicator.setVisibility(View.VISIBLE);
+
+        }
+
         @Override
         protected String[] doInBackground(String... strings) {
 
@@ -111,10 +136,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String[] strings) {
-            for (String data:strings){
-                mWeatherTextView.append(data);
-                mWeatherTextView.append("\n\n\n");
+            loadingIndicator.setVisibility(View.INVISIBLE);
+            if (strings!=null){
+                showDataView();
+                for (String data:strings){
+                    mWeatherTextView.append(data);
+                    mWeatherTextView.append("\n\n\n");
+                }
             }
+            else {
+                showErrorView();
+            }
+
 
         }
     }

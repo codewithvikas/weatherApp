@@ -13,9 +13,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:padding="16dp"
-            android:text="Hello World!" />
+            android:padding="16dp" />
     </ScrollView>
-
+    <TextView
+        android:id="@+id/tv_error_display_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:visibility="invisible"
+        android:text="@string/error_msg"/>
+    
+    <ProgressBar
+        android:id="@+id/pb_loading_indecator"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:visibility="invisible"
+        android:padding="16dp"
+        android:layout_gravity="center"/>
 
 </FrameLayout>
