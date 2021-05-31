@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String[] strings) {
             loadingIndicator.setVisibility(View.INVISIBLE);
-            if (strings!=null&& strings.length > 0){
+            if (strings!=null){
                 showDataView();
                 for (String data:strings){
                     mWeatherTextView.append(data);
