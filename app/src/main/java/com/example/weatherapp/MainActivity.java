@@ -2,6 +2,8 @@ package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -27,9 +29,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mWeatherTextView;
+    private ForeCastAdapter mForeCastAdapter;
     ProgressBar loadingIndicator;
     TextView errorTextView;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,13 @@ public class MainActivity extends AppCompatActivity {
          * Using findViewById, we get a reference to our TextView from xml. This allows us to
          * do things like set the text of the TextView.
          */
-        mWeatherTextView = (TextView) findViewById(R.id.weather_data_tv);
+
+         recyclerView = findViewById(R.id.forecast_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        mForeCastAdapter = new ForeCastAdapter();
+
+        recyclerView.setAdapter(mForeCastAdapter);
 
         loadingIndicator = findViewById(R.id.pb_loading_indecator);
 
@@ -80,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_refresh:
-                mWeatherTextView.setText("");
+                mForeCastAdapter.setWeatherData(null);
                 loadWeatherData(WeatherPreferences.getPreferredWeatherLocation(this));
                 return true;
             default:
@@ -90,12 +99,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showDataView(){
-        mWeatherTextView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
         errorTextView.setVisibility(View.INVISIBLE);
     }
     void showErrorView(){
         errorTextView.setVisibility(View.VISIBLE);
-        mWeatherTextView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
     }
     class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
 
@@ -139,10 +148,7 @@ public class MainActivity extends AppCompatActivity {
             loadingIndicator.setVisibility(View.INVISIBLE);
             if (strings!=null){
                 showDataView();
-                for (String data:strings){
-                    mWeatherTextView.append(data);
-                    mWeatherTextView.append("\n\n\n");
-                }
+                mForeCastAdapter.setWeatherData(strings);
             }
             else {
                 showErrorView();
