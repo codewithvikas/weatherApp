@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.data.WeatherPreferences;
 import com.example.utils.NetworkUtils;
@@ -27,12 +28,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler {
 
     private ForeCastAdapter mForeCastAdapter;
     ProgressBar loadingIndicator;
     TextView errorTextView;
     RecyclerView recyclerView;
+
+    Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
          recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        mForeCastAdapter = new ForeCastAdapter();
+        mForeCastAdapter = new ForeCastAdapter(this);
 
         recyclerView.setAdapter(mForeCastAdapter);
 
@@ -106,6 +109,16 @@ public class MainActivity extends AppCompatActivity {
         errorTextView.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
     }
+
+    @Override
+    public void onClick(String weatherDay) {
+        if (mToast!=null){
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(this,"Detail for  "+weatherDay+"  Coming Soon!!",Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
     class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
 
         Context mContext;

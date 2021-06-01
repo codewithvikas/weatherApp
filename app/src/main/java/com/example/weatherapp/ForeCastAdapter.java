@@ -11,6 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.ForecastItemHolder> {
 
+
+    ItemClickHandler itemClickHandler;
+    ForeCastAdapter(ItemClickHandler itemClickHandler){
+        this.itemClickHandler = itemClickHandler;
+    }
+    interface ItemClickHandler {
+        void onClick(String weatherDay);
+    }
     private String[] mWeatherData;
     @NonNull
     @org.jetbrains.annotations.NotNull
@@ -46,6 +54,12 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         public ForecastItemHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
             super(itemView);
             dataTextView = itemView.findViewById(R.id.tv_weather_data);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    itemClickHandler.onClick(mWeatherData[getAdapterPosition()]);
+                }
+            });
         }
     }
 }
