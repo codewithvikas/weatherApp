@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -112,11 +113,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     @Override
     public void onClick(String weatherDay) {
-        if (mToast!=null){
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(this,"Detail for  "+weatherDay+"  Coming Soon!!",Toast.LENGTH_SHORT);
-        mToast.show();
+
+        Intent intent = new Intent(this,DetailActivity.class);
+        startActivity(intent);
     }
 
     class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
