@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     public void onClick(String weatherDay) {
 
         Intent intent = new Intent(this,DetailActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT,weatherDay);
         startActivity(intent);
     }
 
