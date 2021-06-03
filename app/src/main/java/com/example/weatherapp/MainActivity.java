@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -96,12 +97,30 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                 mForeCastAdapter.setWeatherData(null);
                 loadWeatherData(WeatherPreferences.getPreferredWeatherLocation(this));
                 return true;
+            case R.id.action_open_map:
+                openMapInLocation();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
 
                         }
     }
 
+    void openMapInLocation(){
+        String query = "Patna, Bihar";
+        Uri data = Uri.parse("geo:0,0?q="+ query);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(data);
+
+        if (intent.resolveActivity(getPackageManager())!=null){
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this,"Could not open map. No any App is installed",Toast.LENGTH_SHORT).show();
+        }
+    }
     void showDataView(){
         recyclerView.setVisibility(View.VISIBLE);
         errorTextView.setVisibility(View.INVISIBLE);
