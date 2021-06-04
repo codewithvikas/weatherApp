@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +38,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<String[]> {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private ForeCastAdapter mForeCastAdapter;
     ProgressBar loadingIndicator;
     TextView errorTextView;
@@ -121,18 +123,30 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     @NotNull
     @Override
     public Loader<String[]> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+
+        Log.d(TAG,"OnCreateLoader Called");
         return new AsyncTaskLoader<String[]>(this) {
 
+            String[] mWeatherData;
             @Override
             protected void onStartLoading() {
-                loadingIndicator.setVisibility(View.VISIBLE);
-                forceLoad();
+                Log.d(TAG,"OnStartLoading Called");
+                if (mWeatherData!=null){
+                    deliverResult(mWeatherData);
+                }
+                else {
+                    loadingIndicator.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
+
             }
 
             @Nullable
             @org.jetbrains.annotations.Nullable
             @Override
             public String[] loadInBackground() {
+                Log.d(TAG,"LoadInBackGround called");
+
                 String locationQuery = WeatherPreferences.getPreferredWeatherLocation(MainActivity.this);
                 URL  networkUrl = NetworkUtils.buildUrl(locationQuery);
                     try {
@@ -151,11 +165,19 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                     }
                     return null;
             }
+
+            @Override
+            public void deliverResult(@Nullable @org.jetbrains.annotations.Nullable String[] data) {
+                mWeatherData = data;
+                super.deliverResult(data);
+            }
         };
     }
 
     @Override
     public void onLoadFinished(@NonNull @NotNull Loader<String[]> loader, String[] data) {
+        Log.d(TAG,"OnLoadFinished called");
+
         loadingIndicator.setVisibility(View.INVISIBLE);
         mForeCastAdapter.setWeatherData(data);
         if (data==null){
@@ -169,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     @Override
     public void onLoaderReset(@NonNull @NotNull Loader<String[]> loader) {
-
+            Log.d(TAG,"OnLoaderReset called");
     }
 
 }
