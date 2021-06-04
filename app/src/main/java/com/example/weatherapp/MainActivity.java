@@ -1,7 +1,11 @@
 package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,30 +28,26 @@ import com.example.utils.NetworkUtils;
 import com.example.utils.OpenWeatherJsonUtils;
 import com.example.utils.WeatherUtils;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler {
+public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<String[]> {
 
     private ForeCastAdapter mForeCastAdapter;
     ProgressBar loadingIndicator;
     TextView errorTextView;
     RecyclerView recyclerView;
 
-    Toast mToast;
+    private static int LOADER_ID = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
-
-        /*
-         * Using findViewById, we get a reference to our TextView from xml. This allows us to
-         * do things like set the text of the TextView.
-         */
 
          recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -60,28 +60,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
         errorTextView = findViewById(R.id.tv_error_display_msg);
 
-        // Completed (4) Delete the dummy weather data. You will be getting REAL data from the Internet in this lesson.
-        /*
-         * This String array contains dummy weather data. Later in the course, we're going to get
-         * real weather data. For now, we want to get something on the screen as quickly as
-         * possible, so we'll display this dummy data.
-         */
-
-        // Completed (3) Delete the for loop that populates the TextView with dummy data
-        /*
-         * Iterate through the array and append the Strings to the TextView. The reason why we add
-         * the "\n\n\n" after the String is to give visual separation between each String in the
-         * TextView. Later, we'll learn about a better way to display lists of data.
-         */
-
-        // Completed (9) Call loadWeatherData to perform the network request to get the weather
-        loadWeatherData(WeatherPreferences.getPreferredWeatherLocation(this));
-    }
-
-    // Completed (8) Create a method that will get the user's preferred location and execute your new AsyncTask and call it loadWeatherData
-
-    void loadWeatherData(String preferredLocation){
-        new WeatherAsyncTask(this).execute(preferredLocation);
+        getSupportLoaderManager().initLoader(LOADER_ID,null,this);
     }
 
     @Override
@@ -95,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         switch (item.getItemId()){
             case R.id.action_refresh:
                 mForeCastAdapter.setWeatherData(null);
-                loadWeatherData(WeatherPreferences.getPreferredWeatherLocation(this));
+                getSupportLoaderManager().restartLoader(LOADER_ID,null,this);
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();
@@ -138,58 +117,59 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         startActivity(intent);
     }
 
-    class WeatherAsyncTask extends AsyncTask<String,Void, String[]>{
+    @NonNull
+    @NotNull
+    @Override
+    public Loader<String[]> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+        return new AsyncTaskLoader<String[]>(this) {
 
-        Context mContext;
-        WeatherAsyncTask(Context context){
-            mContext = context;
-        }
+            @Override
+            protected void onStartLoading() {
+                loadingIndicator.setVisibility(View.VISIBLE);
+                forceLoad();
+            }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loadingIndicator.setVisibility(View.VISIBLE);
-
-        }
-
-        @Override
-        protected String[] doInBackground(String... strings) {
-
-            if (strings[0]!=null){
-                URL networkUrl = NetworkUtils.buildUrl(strings[0]);
-                try {
-                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(networkUrl);
-                    if (jsonResponse==null){
-                        return null;
-                    }
+            @Nullable
+            @org.jetbrains.annotations.Nullable
+            @Override
+            public String[] loadInBackground() {
+                String locationQuery = WeatherPreferences.getPreferredWeatherLocation(MainActivity.this);
+                URL  networkUrl = NetworkUtils.buildUrl(locationQuery);
                     try {
-                        return OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(mContext,jsonResponse);
-                    } catch (JSONException e) {
+                        String jsonResponse = NetworkUtils.getResponseFromHttpUrl(networkUrl);
+                        if (jsonResponse==null){
+                            return null;
+                        }
+                        try {
+                            return OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this,jsonResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    return null;
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String[] strings) {
-            loadingIndicator.setVisibility(View.INVISIBLE);
-            if (strings!=null){
-                showDataView();
-                mForeCastAdapter.setWeatherData(strings);
-            }
-            else {
-                showErrorView();
-            }
-
-
-        }
+        };
     }
-    // Completed (5) Create a class that extends AsyncTask to perform network requests
-    // Completed (6) Override the doInBackground method to perform your network requests
-    // Completed (7) Override the onPostExecute method to display the results of the network request
+
+    @Override
+    public void onLoadFinished(@NonNull @NotNull Loader<String[]> loader, String[] data) {
+        loadingIndicator.setVisibility(View.INVISIBLE);
+        mForeCastAdapter.setWeatherData(data);
+        if (data==null){
+            showErrorView();
+        }
+        else {
+            showDataView();
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull @NotNull Loader<String[]> loader) {
+
+    }
+
 }
