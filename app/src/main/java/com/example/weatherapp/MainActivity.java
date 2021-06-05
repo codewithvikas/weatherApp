@@ -81,11 +81,18 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
             case R.id.action_open_map:
                 openMapInLocation();
                 return true;
+            case R.id.action_settings:
+                openSettingActivity();
 
             default:
                 return super.onOptionsItemSelected(item);
 
                         }
+    }
+
+    private void openSettingActivity() {
+        Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+        startActivity(intent);
     }
 
     void openMapInLocation(){
