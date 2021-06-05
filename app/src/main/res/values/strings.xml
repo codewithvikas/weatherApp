@@ -115,6 +115,9 @@
     <string name="share_detail">Share</string>
     <string name="open_map">Open Map</string>
     <string name="setting">Setting</string>
+    <string name="pref_location_default">Patna Bihar</string>
+    <string name="pref_location_key">pref_location</string>
+    <string name="pref_location_label">Location</string>
 
 
     <!-- - - - - - - - - - - -->
@@ -129,6 +132,12 @@
 
     <!-- - - - - - - - - - - - - - -->
     <!--Used by SunshinePreferences-->
+    <string name="pref_unit_label_metric">Metric</string>
+    <string name="pref_unit_label_imperial">Imperial</string>
+    <string name="pref_unit_imperial">imperial</string>
+    <string name="pref_unit_metric">Metric</string>
+    <string name="pref_units_key">pref_unit_key</string>
+    <string name="pref_unit_title">Unit</string>
     <!-- - - - - - - - - - - - - - -->
     <!--NONE-->
 </resources>

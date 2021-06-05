@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.AsyncTaskLoader;
 import androidx.loader.content.Loader;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,7 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<String[]> {
+public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<String[]>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ForeCastAdapter mForeCastAdapter;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     TextView errorTextView;
     RecyclerView recyclerView;
 
+    private static  boolean PREFERENCE_HAVE_BEEN_UPDATED = false;
     private static int LOADER_ID = 11;
 
     @Override
@@ -63,6 +66,22 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         errorTextView = findViewById(R.id.tv_error_display_msg);
 
         getSupportLoaderManager().initLoader(LOADER_ID,null,this);
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (PREFERENCE_HAVE_BEEN_UPDATED){
+            getSupportLoaderManager().restartLoader(LOADER_ID,null,this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -70,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         getMenuInflater().inflate(R.menu.forecast,menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -96,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     }
 
     void openMapInLocation(){
-        String query = "Patna, Bihar";
+        String query = WeatherPreferences.getPreferredWeatherLocation(this);
         Uri data = Uri.parse("geo:0,0?q="+ query);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -201,4 +221,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
             Log.d(TAG,"OnLoaderReset called");
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        PREFERENCE_HAVE_BEEN_UPDATED = true;
+    }
 }

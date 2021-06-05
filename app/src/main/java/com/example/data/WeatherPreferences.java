@@ -1,6 +1,11 @@
 package com.example.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
+import com.example.weatherapp.R;
 
 public class WeatherPreferences {
     /*
@@ -71,8 +76,12 @@ public class WeatherPreferences {
      * "94043,USA" if SharedPreferences have not been implemented yet.
      */
     public static String getPreferredWeatherLocation(Context context) {
-        /** This will be implemented in a future lesson **/
-        return getDefaultWeatherLocation();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.pref_location_key);
+        String defaultValue = context.getString(R.string.pref_location_default);
+
+        return sharedPreferences.getString(key,defaultValue);
     }
 
     /**
@@ -82,8 +91,19 @@ public class WeatherPreferences {
      * @return true If metric display should be used
      */
     public static boolean isMetric(Context context) {
-        /** This will be implemented in a future lesson **/
-        return true;
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String key_for_unit = context.getString(R.string.pref_units_key);
+        String default_unit = context.getString(R.string.pref_unit_metric);
+        String prefered_unit = sharedPreferences.getString(key_for_unit,default_unit);
+
+        String metric = context.getString(R.string.pref_unit_metric);
+
+        boolean userPreferedMetric = false;
+        if (prefered_unit.equals(metric)){
+            userPreferedMetric = true;
+        }
+        return userPreferedMetric;
     }
 
     /**
