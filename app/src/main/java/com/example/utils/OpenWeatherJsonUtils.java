@@ -2,6 +2,10 @@ package com.example.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SearchRecentSuggestionsProvider;
+
+import com.example.data.WeatherContract;
+import com.example.data.WeatherPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,6 +14,37 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 
 public final class OpenWeatherJsonUtils {
+
+    static final String OWM_MESSAGE_CODE = "cod";
+
+    static final String OWM_CITY = "city";
+    static final String OWM_CITY_NAME = "name";
+
+    static final String OWM_COORD = "coord";
+    static final String OWM_LAT = "lat";
+    static final String OWM_LON = "lon";
+
+    static final String OWM_LIST = "list";
+    /* All temperatures are children of the "temp" object */
+    static final String OWM_TEMPERATURE = "temp";
+
+    /* Max temperature for the day */
+    static final String OWM_MAX = "max";
+    static final String OWM_MIN = "min";
+
+
+    static final String OWM_PRESSURE = "pressure";
+
+    static final String OWM_HUMIDITY = "humidity";
+
+    static final String OWM_WEATHER = "weather";
+    static final String OWM_WEATHER_ID = "id";
+
+    static final String OWM_DESCRIPTION = "description";
+
+    static final String OWM_WIND_SPEED = "speed";
+    static final String OWN_WIND_DEG = "deg";
+
     /**
      * This method parses JSON from a web response and returns an array of Strings
      * describing the weather over various days from the forecast.
@@ -27,20 +62,6 @@ public final class OpenWeatherJsonUtils {
     public static String[] getSimpleWeatherStringsFromJson(Context context, String forecastJsonStr)
             throws JSONException {
 
-        /* Weather information. Each day's forecast info is an element of the "list" array */
-        final String OWM_LIST = "list";
-
-        /* All temperatures are children of the "temp" object */
-        final String OWM_TEMPERATURE = "temp";
-
-        /* Max temperature for the day */
-        final String OWM_MAX = "max";
-        final String OWM_MIN = "min";
-
-        final String OWM_WEATHER = "weather";
-        final String OWM_DESCRIPTION = "main";
-
-        final String OWM_MESSAGE_CODE = "cod";
 
         /* String array to hold each day's weather String */
         String[] parsedWeatherData = null;
@@ -125,9 +146,80 @@ public final class OpenWeatherJsonUtils {
      *
      * @return An array of ContentValues parsed from the JSON.
      */
-    public static ContentValues[] getFullWeatherDataFromJson(Context context, String forecastJsonStr) {
-        /** This will be implemented in a future lesson **/
-        return null;
+    public static ContentValues[] getFullWeatherDataFromJson(Context context, String forecastJsonStr) throws  JSONException{
+
+        JSONObject jsonWeatherObject = new JSONObject(forecastJsonStr);
+
+        if (jsonWeatherObject.has(OWM_MESSAGE_CODE)){
+            int errorCode = jsonWeatherObject.getInt(OWM_MESSAGE_CODE);
+            switch (errorCode){
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    return null;
+                default:
+                    return null;
+            }
+        }
+
+        JSONArray jsonWeatherArray = jsonWeatherObject.getJSONArray(OWM_LIST);
+        JSONObject cityJson = jsonWeatherObject.getJSONObject(OWM_CITY);
+        JSONObject coord = cityJson.getJSONObject(OWM_COORD);
+        double lat = coord.getDouble(OWM_LAT);
+        double lon = coord.getDouble(OWM_LON);
+        String city = cityJson.getString(OWM_CITY_NAME);
+
+        WeatherPreferences.setLocationDetails(context,city,lat,lon);
+
+        ContentValues[] weatherContentValues = new ContentValues[jsonWeatherArray.length()];
+
+        long normalizedUtcStartDay = WeatherDateUtils.getNormalizedUtcDateForToday();
+
+        for (int i =0;i<jsonWeatherArray.length();i++){
+
+            long dateTimeMilli;
+            double pressure;
+            double humidity;
+            double windSpeed;
+            double windDirection;
+            double high;
+            double low;
+            int weatherId;
+            String description;
+
+            JSONObject dayForecast = jsonWeatherArray.getJSONObject(i);
+
+            dateTimeMilli = normalizedUtcStartDay + WeatherDateUtils.DAY_IN_MILLIS*i;
+
+            pressure = dayForecast.getDouble(OWM_PRESSURE);
+            humidity = dayForecast.getDouble(OWM_HUMIDITY);
+
+            windSpeed = dayForecast.getDouble(OWM_WIND_SPEED);
+            windDirection = dayForecast.getDouble(OWN_WIND_DEG);
+
+             JSONObject weather = dayForecast.getJSONObject(OWM_WEATHER);
+
+             description = weather.getString(OWM_DESCRIPTION);
+             weatherId = weather.getInt(OWM_WEATHER_ID);
+
+            JSONObject temp = dayForecast.getJSONObject(OWM_TEMPERATURE);
+
+            high = temp.getDouble(OWM_MAX);
+            low = temp.getDouble(OWM_MIN);
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_DATE,dateTimeMilli);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE,pressure);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY,humidity);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,windSpeed);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREE,windDirection);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,high);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,low);
+            contentValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,weatherId);
+
+            weatherContentValues[i] = contentValues;
+        }
+        return weatherContentValues;
     }
 
 }
