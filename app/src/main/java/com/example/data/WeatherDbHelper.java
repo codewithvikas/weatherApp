@@ -10,7 +10,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "weather.db";
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public WeatherDbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,18 +25,18 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                         " ("+
                         WeatherContract.WeatherEntry._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
 
-                        WeatherContract.WeatherEntry.COLUMN_DATE+" INTEGER, "+
+                        WeatherContract.WeatherEntry.COLUMN_DATE+" INTEGER NOT NULL, "+
 
-                        WeatherContract.WeatherEntry.COLUMN_WEATHER_ID + " INTEGER, "+
+                        WeatherContract.WeatherEntry.COLUMN_WEATHER_ID + " INTEGER NOT NULL, "+
 
-                        WeatherContract.WeatherEntry.COLUMN_MIN_TEMP +" REAL, "+
-                        WeatherContract.WeatherEntry.COLUMN_MAX_TEMP +" REAL, "+
+                        WeatherContract.WeatherEntry.COLUMN_MIN_TEMP +" REAL NOT NULL, "+
+                        WeatherContract.WeatherEntry.COLUMN_MAX_TEMP +" REAL NOT NULL, "+
 
-                        WeatherContract.WeatherEntry.COLUMN_HUMIDITY +" REAL, "+
-                        WeatherContract.WeatherEntry.COLUMN_PRESSURE +" REAL, "+
+                        WeatherContract.WeatherEntry.COLUMN_HUMIDITY +" REAL NOT NULL, "+
+                        WeatherContract.WeatherEntry.COLUMN_PRESSURE +" REAL NOT NULL, "+
 
-                        WeatherContract.WeatherEntry.COLUMN_WIND_SPEED +" REAL, "+
-                        WeatherContract.WeatherEntry.COLUMN_DEGREE +" REAL "+
+                        WeatherContract.WeatherEntry.COLUMN_WIND_SPEED +" REAL NOT NULL, "+
+                        WeatherContract.WeatherEntry.COLUMN_DEGREE +" REAL  NOT NULL"+
                         ");";
 
         db.execSQL(SQL_CREATE_WEATHER_TABLE);
@@ -44,6 +44,6 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+                onCreate(db);
     }
 }
