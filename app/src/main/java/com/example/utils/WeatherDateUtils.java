@@ -86,6 +86,10 @@ public final class WeatherDateUtils {
         return retValNew;
     }
 
+    public static boolean isNormalizedDate(long date){
+        return date % DAY_IN_MILLIS == 0;
+    }
+
     /**
      * Since all dates from the database are in UTC, we must convert the given date
      * (in UTC timezone) to the date in the local timezone. Ths function performs that conversion
