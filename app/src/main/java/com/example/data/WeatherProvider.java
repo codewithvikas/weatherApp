@@ -4,10 +4,13 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.utils.WeatherDateUtils;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -68,6 +71,38 @@ public class WeatherProvider extends ContentProvider {
     @Override
     public String getType(@NonNull Uri uri) {
         return null;
+    }
+
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+
+        SQLiteDatabase db = mWeatherDbHelper.getWritableDatabase();
+        switch (sUriMatcher.match(uri)){
+            case CODE_WEATHER:
+                db.beginTransaction();
+                int rowsInserted = 0;
+                try {
+                    for (ContentValues value : values){
+                        long weatherDate = value.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
+                        if (!WeatherDateUtils.isNormalizedDate(weatherDate)){
+                            throw new IllegalArgumentException("Date must be normalized");
+                        }
+                        long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME,null,value);
+                        if (_id > -1){
+                            rowsInserted++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                }finally {
+                    db.endTransaction();
+                }
+            if (rowsInserted > 0){
+                getContext().getContentResolver().notifyChange(uri,null);
+            }
+            return rowsInserted;
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     @Nullable
