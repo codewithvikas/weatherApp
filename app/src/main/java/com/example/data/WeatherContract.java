@@ -4,6 +4,8 @@ import android.provider.BaseColumns;
 
 public class WeatherContract {
 
+    public static final String CONTENT_AUTHORITY = "com.example.weather.data";
+    public static final String WEATHER_PATH = "weather";
     public static final class WeatherEntry  implements BaseColumns {
 
         public static final String TABLE_NAME = "weather";
