@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.data.WeatherPreferences;
+import com.example.utils.FakeDataUtils;
 import com.example.utils.NetworkUtils;
 import com.example.utils.OpenWeatherJsonUtils;
 import com.example.utils.WeatherUtils;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
          recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+
+        FakeDataUtils.insertFakeData(this);
         mForeCastAdapter = new ForeCastAdapter(this);
 
         recyclerView.setAdapter(mForeCastAdapter);
