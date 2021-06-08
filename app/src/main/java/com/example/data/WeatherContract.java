@@ -36,5 +36,10 @@ public class WeatherContract {
             long normalizeUtcNow = WeatherDateUtils.getNormalizedUtcDateForToday();
             return WeatherEntry.COLUMN_DATE+" >= "+normalizeUtcNow;
         }
+
+        public static Uri buildWeatherUriWithDate(long date){
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(date)).build();
+
+        }
     }
 }
