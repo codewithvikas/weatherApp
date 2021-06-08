@@ -3,6 +3,8 @@ package com.example.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.example.utils.WeatherDateUtils;
+
 public class WeatherContract {
 
     public static final String CONTENT_AUTHORITY = "com.example.weather.data";
@@ -29,5 +31,10 @@ public class WeatherContract {
         public static final String COLUMN_WIND_SPEED = "wind";
 
         public static final String COLUMN_DEGREE = "degree";
+
+        public static String getSqlSelectTodayOnwards(){
+            long normalizeUtcNow = WeatherDateUtils.getNormalizedUtcDateForToday();
+            return WeatherEntry.COLUMN_DATE+" >= "+normalizeUtcNow;
+        }
     }
 }
