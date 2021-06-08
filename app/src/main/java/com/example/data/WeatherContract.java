@@ -1,13 +1,17 @@
 package com.example.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class WeatherContract {
 
     public static final String CONTENT_AUTHORITY = "com.example.weather.data";
     public static final String WEATHER_PATH = "weather";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
+
     public static final class WeatherEntry  implements BaseColumns {
 
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(WEATHER_PATH).build();
         public static final String TABLE_NAME = "weather";
 
         public static final String COLUMN_WEATHER_ID = "weather_id";
