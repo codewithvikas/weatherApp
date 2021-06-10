@@ -4,13 +4,16 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
+
 @Entity(tableName = "weather")
 public class WeatherEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int weather_id;
 
-    private long date;
+    private Date date;
 
     private double min;
 
@@ -25,7 +28,7 @@ public class WeatherEntity {
     private double degree;
 
     @Ignore
-    public WeatherEntity(long date, double min, double max, double humidity, double pressure, double wind, double degree) {
+    public WeatherEntity(Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
         this.date = date;
         this.min = min;
         this.max = max;
@@ -35,7 +38,7 @@ public class WeatherEntity {
         this.degree = degree;
     }
 
-    public WeatherEntity(int weather_id, long date, double min, double max, double humidity, double pressure, double wind, double degree) {
+    public WeatherEntity(int weather_id, Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
         this.weather_id = weather_id;
         this.date = date;
         this.min = min;
@@ -54,11 +57,11 @@ public class WeatherEntity {
         this.weather_id = weather_id;
     }
 
-    public long getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(long date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
