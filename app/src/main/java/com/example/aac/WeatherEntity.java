@@ -4,7 +4,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.sql.Date;
+import java.util.Date;
+
 
 @Entity(tableName = "weather")
 public class WeatherEntity {
