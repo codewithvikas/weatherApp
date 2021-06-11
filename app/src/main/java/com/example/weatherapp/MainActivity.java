@@ -23,11 +23,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aac.WeatherDatabase;
+import com.example.aac.WeatherEntity;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.FakeDataUtils;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -52,12 +57,17 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     public static final int INDEX_COLUMN_MIN = 2;
     public static final int INDEX_COLUMN_ID = 3;
 
+    WeatherDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0);
         FakeDataUtils.insertFakeData(this);
+
+         mDb = WeatherDatabase.getInstance(this);
+        FakeDataUtils.insertFakeDataInRoom(mDb);
 
         recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -147,9 +157,10 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     @Override
     public void onClick(long date) {
-        Intent intent = new Intent(this,DetailActivity.class);
+        Toast.makeText(this,"Weather Item: "+ new Date(date).toString()+" Clicked",Toast.LENGTH_SHORT).show();
+        /*Intent intent = new Intent(this,DetailActivity.class);
         intent.setData(WeatherContract.WeatherEntry.buildWeatherUriWithDate(date));
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     @NonNull
@@ -183,13 +194,16 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         Log.d(TAG,"OnLoadFinished called");
 
         loadingIndicator.setVisibility(View.INVISIBLE);
-        mForeCastAdapter.swapCursor(data);
-        if (data.getCount()==0){
+
+        List<WeatherEntity> weatherEntities = mDb.weatherDao().loadAllWeather();
+        mForeCastAdapter.swapCursor(weatherEntities);
+        //mForeCastAdapter.swapCursor(data);
+        /*if (data.getCount()==0){
             showErrorView();
         }
         else {
             showDataView();
-        }
+        }*/
 
     }
 

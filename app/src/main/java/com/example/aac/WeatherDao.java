@@ -19,6 +19,8 @@ public interface WeatherDao {
 
     @Insert
     void insertWeather(WeatherEntity weatherEntity);
+    @Insert
+    void insertAllWeather(List<WeatherEntity> weatherEntities);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateWeather(WeatherEntity weatherEntity);
