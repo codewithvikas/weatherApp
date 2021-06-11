@@ -11,9 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.aac.WeatherEntity;
 import com.example.data.WeatherContract;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;
+
+import java.util.Date;
+import java.util.List;
 
 public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.ForecastItemHolder> {
 
@@ -28,7 +32,7 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
     interface ItemClickHandler {
         void onClick(long date);
     }
-    private Cursor mWeatherData;
+    private List<WeatherEntity> mWeatherData;
     @NonNull
     @org.jetbrains.annotations.NotNull
     @Override
@@ -41,16 +45,15 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
     @Override
     public void onBindViewHolder(@NonNull @org.jetbrains.annotations.NotNull ForeCastAdapter.ForecastItemHolder holder, int position) {
 
-        mWeatherData.moveToPosition(position);
-        long date = mWeatherData.getLong(MainActivity.INDEX_COLUMN_DATE);
-        String dateString = WeatherDateUtils.getFriendlyDateString(mContext,date,false);
+        WeatherEntity weatherEntity =  mWeatherData.get(position);
+        Date date = weatherEntity.getDate();
+        String dateString = WeatherDateUtils.getFriendlyDateString(mContext,date.getTime(),false);
 
-        int weatherId = mWeatherData.getInt(MainActivity.INDEX_COLUMN_ID);
+        int weatherId = weatherEntity.getWeather_id();
         String description = WeatherUtils.getStringForWeatherCondition(mContext,weatherId);
 
-        double highInCelsius = mWeatherData.getDouble(MainActivity.INDEX_COLUMN_MAX);
-        double lowInCelsius = mWeatherData.getDouble(MainActivity.INDEX_COLUMN_MIN);
-
+        double highInCelsius =  weatherEntity.getMax();
+        double lowInCelsius = weatherEntity.getMin();
         String formatHighLowTemp = WeatherUtils.formatHighLows(mContext,highInCelsius,lowInCelsius);
 
         String weatherSummary  = dateString +" - "+ description +" - "+formatHighLowTemp;
@@ -61,12 +64,12 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
     @Override
     public int getItemCount() {
         if (mWeatherData!=null){
-            return mWeatherData.getCount();
+            return mWeatherData.size();
         }
         return 0;
     }
 
-    public void swapCursor(Cursor mWeatherData) {
+    public void swapCursor(List<WeatherEntity> mWeatherData) {
         this.mWeatherData = mWeatherData;
         notifyDataSetChanged();
     }
@@ -80,7 +83,7 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    long date = mWeatherData.getLong(MainActivity.INDEX_COLUMN_DATE);
+                    long date = mWeatherData.get(getAdapterPosition()).getDate().getTime();
 
                     itemClickHandler.onClick(date);
                 }

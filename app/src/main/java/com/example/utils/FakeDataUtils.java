@@ -3,9 +3,14 @@ package com.example.utils;
 import android.content.ContentValues;
 import android.content.Context;
 
+import androidx.room.RoomDatabase;
+
+import com.example.aac.WeatherDatabase;
+import com.example.aac.WeatherEntity;
 import com.example.data.WeatherContract;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +32,17 @@ public class FakeDataUtils {
         return testContent;
     }
 
+    private static WeatherEntity createTestWeatherEntityValues(long date){
+        double max = Math.random() * 100;
+        double min = max - Math.random() * 10;
+        double humidity = Math.random() * 100;
+        double pressure = 870 + Math.random() * 100;
+        double wind = Math.random() * 30;
+        double degree = Math.random() * 2;
+
+        return new WeatherEntity(new Date(date),min,max,humidity,pressure,wind,degree);
+    }
+
     public static void insertFakeData(Context context){
         long today = WeatherDateUtils.normalizeDate(System.currentTimeMillis());
         List<ContentValues> fakeValues = new ArrayList<>();
@@ -34,5 +50,14 @@ public class FakeDataUtils {
             fakeValues.add(createTestWeatherContentValues(today+ TimeUnit.DAYS.toMillis(i)));
         }
         context.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI,fakeValues.toArray(new ContentValues[7]));
+    }
+
+    public static void insertFakeDataInRoom(WeatherDatabase db){
+        long today = WeatherDateUtils.normalizeDate(System.currentTimeMillis());
+        List<WeatherEntity> fakeValues = new ArrayList<>();
+        for (int i = 0;i<7;i++){
+            fakeValues.add(createTestWeatherEntityValues(today+ TimeUnit.DAYS.toMillis(i)));
+        }
+        db.weatherDao().insertAllWeather(fakeValues);
     }
 }
