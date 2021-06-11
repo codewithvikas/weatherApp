@@ -20,6 +20,7 @@ public abstract class WeatherDatabase extends RoomDatabase {
         synchronized (LOCK){
             if (sInstance==null){
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),WeatherDatabase.class,DATABASE_NAME)
+                        .allowMainThreadQueries()// Enabled just only to test Room.Never allow it for release version.
                         .build();
             }
 
