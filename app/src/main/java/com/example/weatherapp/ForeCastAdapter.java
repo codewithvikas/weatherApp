@@ -55,8 +55,9 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         double highInCelsius =  weatherEntity.getMax();
         double lowInCelsius = weatherEntity.getMin();
         String formatHighLowTemp = WeatherUtils.formatHighLows(mContext,highInCelsius,lowInCelsius);
+        double pressure = weatherEntity.getPressure();
 
-        String weatherSummary  = dateString +" - "+ description +" - "+formatHighLowTemp;
+        String weatherSummary  = dateString +" - "+ description +" - "+formatHighLowTemp+" - "+pressure;
 
         holder.dataTextView.setText(weatherSummary);
     }

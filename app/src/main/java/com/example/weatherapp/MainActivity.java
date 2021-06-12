@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0);
-        FakeDataUtils.insertFakeData(this);
+        //FakeDataUtils.insertFakeData(this);
 
          mDb = WeatherDatabase.getInstance(this);
        // FakeDataUtils.insertFakeDataInRoom(mDb);
