@@ -28,13 +28,18 @@ import com.example.aac.WeatherEntity;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.FakeDataUtils;
+import com.example.utils.NetworkUtils;
+import com.example.utils.OpenWeatherJsonUtils;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ForeCastAdapter mForeCastAdapter;
@@ -64,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0);
-        FakeDataUtils.insertFakeData(this);
+        //FakeDataUtils.insertFakeData(this);
 
          mDb = WeatherDatabase.getInstance(this);
-        FakeDataUtils.insertFakeDataInRoom(mDb);
+       // FakeDataUtils.insertFakeDataInRoom(mDb);
 
         recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -82,16 +87,78 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
         errorTextView = findViewById(R.id.tv_error_display_msg);
 
-        getSupportLoaderManager().initLoader(LOADER_ID,null,this);
-
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+        downloadData(mDb);
+        showData(mDb);
+
+    }
+
+    void showData(WeatherDatabase db){
+        loadingIndicator.setVisibility(View.INVISIBLE);
+
+        AppExecutors.getInstance().networkIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<WeatherEntity> weatherEntities = db.weatherDao().loadAllWeather();
+                Log.d(MainActivity.TAG,"Data loading called");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mForeCastAdapter.swapCursor(weatherEntities);
+                        if (weatherEntities!=null){
+                            showDataView();
+                        }
+                        else {
+                            showErrorView();
+                        }
+
+                    }
+                });
+            }
+        });
+
+    }
+
+    private void downloadData(WeatherDatabase db){
+        loadingIndicator.setVisibility(View.VISIBLE);
+        AppExecutors.getInstance().networkIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                String location = WeatherPreferences.getPreferredWeatherLocation(MainActivity.this);
+
+                URL url = NetworkUtils.buildUrl(location);
+                try {
+                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                    List<WeatherEntity> weatherEntities = OpenWeatherJsonUtils.getFullWeatherEntitiesFromJson(MainActivity.this,jsonResponse);
+
+                    Log.d(MainActivity.TAG,"Network ops done !!");
+                    if (weatherEntities!=null){
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                db.weatherDao().insertAllWeather(weatherEntities);
+                                Log.d(MainActivity.TAG,"Data Insertion called !!");
+                            }
+                        });
+                    }
+                    else {
+                        throw new RuntimeException("Data not downloaded from Network");
+                    }
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_HAVE_BEEN_UPDATED){
-            getSupportLoaderManager().restartLoader(LOADER_ID,null,this);
+           downloadData(mDb);
+           showData(mDb);
         }
     }
 
@@ -113,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         switch (item.getItemId()){
             case R.id.action_refresh:
                 mForeCastAdapter.swapCursor(null);
-                getSupportLoaderManager().restartLoader(LOADER_ID,null,this);
+                Toast.makeText(MainActivity.this,"It will come Soon !!",Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();
@@ -161,56 +228,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         /*Intent intent = new Intent(this,DetailActivity.class);
         intent.setData(WeatherContract.WeatherEntry.buildWeatherUriWithDate(date));
         startActivity(intent);*/
-    }
-
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
-
-        Log.d(TAG,"OnCreateLoader Called");
-            switch (loaderId){
-                case LOADER_ID:
-                    Uri weatherUri = WeatherContract.WeatherEntry.CONTENT_URI;
-                    String sortingOrder = WeatherContract.WeatherEntry.COLUMN_DATE+" ASC";
-
-                    String selection = WeatherContract.WeatherEntry.getSqlSelectTodayOnwards();
-
-                    return new CursorLoader(
-                            this,
-                            weatherUri,
-                            projection,
-                            selection,
-                            null,
-                            sortingOrder
-                    );
-                default:
-                    throw new RuntimeException("Loader Not implemented: "+loaderId);
-            }
-
-    }
-
-    @Override
-    public void onLoadFinished(@NotNull Loader<Cursor> loader, Cursor data) {
-        Log.d(TAG,"OnLoadFinished called");
-
-        loadingIndicator.setVisibility(View.INVISIBLE);
-
-        List<WeatherEntity> weatherEntities = mDb.weatherDao().loadAllWeather();
-        mForeCastAdapter.swapCursor(weatherEntities);
-        //mForeCastAdapter.swapCursor(data);
-        /*if (data.getCount()==0){
-            showErrorView();
-        }
-        else {
-            showDataView();
-        }*/
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull @NotNull Loader<Cursor> loader) {
-            Log.d(TAG,"OnLoaderReset called");
-           mForeCastAdapter.swapCursor(null);
     }
 
     @Override
