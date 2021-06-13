@@ -7,7 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {WeatherEntity.class},version = 1,exportSchema = false)
+@Database(entities = {WeatherEntity.class},version = 2,exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class WeatherDatabase extends RoomDatabase {
 

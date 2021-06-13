@@ -1,7 +1,6 @@
 package com.example.weatherapp;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aac.WeatherEntity;
-import com.example.data.WeatherContract;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;
 
@@ -49,7 +47,7 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         Date date = weatherEntity.getDate();
         String dateString = WeatherDateUtils.getFriendlyDateString(mContext,date.getTime(),false);
 
-        int weatherId = weatherEntity.getWeather_id();
+        int weatherId = weatherEntity.getWeatherId();
         String description = WeatherUtils.getStringForWeatherCondition(mContext,weatherId);
 
         double highInCelsius =  weatherEntity.getMax();

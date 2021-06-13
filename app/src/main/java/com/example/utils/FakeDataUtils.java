@@ -40,7 +40,9 @@ public class FakeDataUtils {
         double wind = Math.random() * 30;
         double degree = Math.random() * 2;
 
-        return new WeatherEntity(new Date(date),min,max,humidity,pressure,wind,degree);
+        int weatherId = (int) ((Math.random() * 10)%5);
+
+        return new WeatherEntity(weatherId,new Date(date),min,max,humidity,pressure,wind,degree);
     }
 
     public static void insertFakeData(Context context){
