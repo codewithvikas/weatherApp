@@ -277,9 +277,8 @@ public final class OpenWeatherJsonUtils {
             windSpeed = dayForecast.getDouble(OWM_WIND_SPEED);
             windDirection = dayForecast.getDouble(OWN_WIND_DEG);
 
-            JSONObject weather = dayForecast.getJSONObject(OWM_WEATHER);
+            JSONObject weather = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
 
-            description = weather.getString(OWM_DESCRIPTION);
             weatherId = weather.getInt(OWM_WEATHER_ID);
 
             JSONObject temp = dayForecast.getJSONObject(OWM_TEMPERATURE);
@@ -287,16 +286,7 @@ public final class OpenWeatherJsonUtils {
             high = temp.getDouble(OWM_MAX);
             low = temp.getDouble(OWM_MIN);
 
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_DATE,dateTimeMilli);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE,pressure);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY,humidity);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,windSpeed);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREE,windDirection);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,high);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,low);
-            contentValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,weatherId);
-            WeatherEntity weatherEntity = new WeatherEntity(new Date(dateTimeMilli),high,low,humidity,pressure,windSpeed,windDirection);
+           WeatherEntity weatherEntity = new WeatherEntity(weatherId,new Date(dateTimeMilli),high,low,humidity,pressure,windSpeed,windDirection);
 
             weatherEntities.add(weatherEntity);
         }
