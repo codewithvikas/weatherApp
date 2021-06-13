@@ -11,8 +11,9 @@ import java.util.Date;
 public class WeatherEntity {
 
     @PrimaryKey(autoGenerate = true)
-    private int weather_id;
+    private int _id;
 
+    private int weatherId;
     private Date date;
 
     private double min;
@@ -28,7 +29,8 @@ public class WeatherEntity {
     private double degree;
 
     @Ignore
-    public WeatherEntity(Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
+    public WeatherEntity(int weatherId,Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
+        this.weatherId = weatherId;
         this.date = date;
         this.min = min;
         this.max = max;
@@ -38,8 +40,9 @@ public class WeatherEntity {
         this.degree = degree;
     }
 
-    public WeatherEntity(int weather_id, Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
-        this.weather_id = weather_id;
+    public WeatherEntity(int _id,int weatherId, Date date, double min, double max, double humidity, double pressure, double wind, double degree) {
+        this.weatherId = weatherId;
+        this._id = _id;
         this.date = date;
         this.min = min;
         this.max = max;
@@ -49,12 +52,20 @@ public class WeatherEntity {
         this.degree = degree;
     }
 
-    public int getWeather_id() {
-        return weather_id;
+    public int get_id() {
+        return _id;
     }
 
-    public void setWeather_id(int weather_id) {
-        this.weather_id = weather_id;
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
+    public int getWeatherId() {
+        return weatherId;
+    }
+
+    public void setWeatherId(int weatherId) {
+        this.weatherId = weatherId;
     }
 
     public Date getDate() {
