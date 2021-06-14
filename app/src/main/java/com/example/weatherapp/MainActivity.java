@@ -7,6 +7,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,6 +65,36 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     WeatherDatabase mDb;
 
+    ItemTouchHelper.SimpleCallback recyclerViewItemTouchHelper = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, @NonNull @NotNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        WeatherEntity weatherEntity = mForeCastAdapter.getWeatherByPosition(viewHolder.getAdapterPosition());
+                        mDb.weatherDao().deleteWeather(weatherEntity);
+                    }
+                });
+                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                     @Override
+                     public void run() {
+                         List<WeatherEntity> weatherEntities = mDb.weatherDao().loadAllWeather();
+                         AppExecutors.getInstance().mainThread().execute(new Runnable() {
+                             @Override
+                             public void run() {
+                                 mForeCastAdapter.swapCursor(weatherEntities);
+                             }
+                         });
+                     }
+                 });
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         mForeCastAdapter = new ForeCastAdapter(this,this);
 
         recyclerView.setAdapter(mForeCastAdapter);
+
+        new ItemTouchHelper(recyclerViewItemTouchHelper).attachToRecyclerView(recyclerView);
 
         loadingIndicator = findViewById(R.id.pb_loading_indecator);
 

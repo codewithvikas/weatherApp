@@ -67,6 +67,12 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         }
         return 0;
     }
+    public WeatherEntity getWeatherByPosition(int position){
+        if (mWeatherData!=null){
+            return mWeatherData.get(position);
+        }
+        return null;
+    }
 
     public void swapCursor(List<WeatherEntity> mWeatherData) {
         this.mWeatherData = mWeatherData;
