@@ -28,6 +28,7 @@ import com.example.aac.WeatherDatabase;
 import com.example.aac.WeatherEntity;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
+import com.example.utils.Constants;
 import com.example.utils.FakeDataUtils;
 import com.example.utils.NetworkUtils;
 import com.example.utils.OpenWeatherJsonUtils;
@@ -257,10 +258,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     @Override
     public void onClick(long date) {
-        Toast.makeText(this,"Weather Item: "+ new Date(date).toString()+" Clicked",Toast.LENGTH_SHORT).show();
-        /*Intent intent = new Intent(this,DetailActivity.class);
-        intent.setData(WeatherContract.WeatherEntry.buildWeatherUriWithDate(date));
-        startActivity(intent);*/
+        Intent intent = new Intent(this,DetailActivity.class);
+        intent.putExtra(Constants.DATE_EXTRA,date);
+        startActivity(intent);
     }
 
     @Override
