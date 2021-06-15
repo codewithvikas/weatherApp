@@ -1,39 +1,33 @@
 package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.aac.WeatherDatabase;
 import com.example.aac.WeatherEntity;
-import com.example.data.WeatherContract;
 import com.example.utils.Constants;
-import com.example.utils.OpenWeatherJsonUtils;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;
 
-import org.jetbrains.annotations.NotNull;
-
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String FORECAST_SHARE_HASHTAG = "#SunshineApp";
 
     TextView dateTv,descTv,maxTv,minTv,humidityTv,windTv,pressureTv;
     String mWeatherSummary;
+    private  long mDateLong;
+
+    private static boolean PREFERENCE_HAVE_BEEN_UPDATE = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +42,26 @@ public class DetailActivity extends AppCompatActivity {
        windTv = findViewById(R.id.tv_wind);
        pressureTv = findViewById(R.id.tv_pressure);
 
-        final long date = getIntent().getLongExtra(Constants.DATE_EXTRA,0);
+        mDateLong = getIntent().getLongExtra(Constants.DATE_EXTRA,0);
+        updateView();
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (PREFERENCE_HAVE_BEEN_UPDATE){
+            updateView();
+        }
+
+    }
+
+    void updateView(){
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 WeatherDatabase database = WeatherDatabase.getInstance(DetailActivity.this);
-                WeatherEntity weatherEntity = database.weatherDao().loadWeatherByDate(date);
+                WeatherEntity weatherEntity = database.weatherDao().loadWeatherByDate(mDateLong);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -77,7 +85,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
     }
-
     Intent createShareForecastIntent(){
 
         mWeatherSummary = dateTv.getText()+" - "+descTv.getText()+" - "+maxTv.getText()+" - "+minTv.getText()+
@@ -116,4 +123,8 @@ public class DetailActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        PREFERENCE_HAVE_BEEN_UPDATE = true;
+    }
 }
