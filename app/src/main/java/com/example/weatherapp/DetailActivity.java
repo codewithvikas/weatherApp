@@ -57,7 +57,8 @@ public class DetailActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dateTv.setText(weatherEntity.getDate().toString());
+                        String dateString = WeatherDateUtils.getFriendlyDateString(DetailActivity.this,weatherEntity.getDate().getTime(),true);
+                        dateTv.setText(dateString);
                         String desc = WeatherUtils.getStringForWeatherCondition(DetailActivity.this,weatherEntity.getWeatherId());
                         descTv.setText(desc);
                         String maxTempString = WeatherUtils.formatTemperature(DetailActivity.this,weatherEntity.getMax());
@@ -78,6 +79,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     Intent createShareForecastIntent(){
+
+        mWeatherSummary = dateTv.getText()+" - "+descTv.getText()+" - "+maxTv.getText()+" - "+minTv.getText()+
+                " - "+humidityTv.getText()+" - "+pressureTv.getText()+" - "+windTv.getText();
+
         Intent shareIntent = new ShareCompat.IntentBuilder(this)
                 .setType("text/plain")
                 .setText(mWeatherSummary+FORECAST_SHARE_HASHTAG)

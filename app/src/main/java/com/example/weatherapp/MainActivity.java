@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     }
 
     void showData(WeatherDatabase db){
-        loadingIndicator.setVisibility(View.INVISIBLE);
 
         AppExecutors.getInstance().networkIO().execute(new Runnable() {
             @Override
@@ -139,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        loadingIndicator.setVisibility(View.INVISIBLE);
                         mForeCastAdapter.swapCursor(weatherEntities);
-                        if (weatherEntities!=null){
+                        if (weatherEntities!=null && weatherEntities.size() > 0){
                             showDataView();
                         }
                         else {
@@ -214,7 +214,8 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         switch (item.getItemId()){
             case R.id.action_refresh:
                 mForeCastAdapter.swapCursor(null);
-                Toast.makeText(MainActivity.this,"It will come Soon !!",Toast.LENGTH_SHORT).show();
+                downloadData(mDb);
+                showData(mDb);
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();
