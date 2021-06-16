@@ -3,6 +3,8 @@ package com.example.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
@@ -45,26 +47,25 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
         mDateLong = getIntent().getLongExtra(Constants.DATE_EXTRA,0);
         updateView();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_HAVE_BEEN_UPDATE){
+            //This part need to optimize
             updateView();
         }
 
     }
 
     void updateView(){
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
                 WeatherDatabase database = WeatherDatabase.getInstance(DetailActivity.this);
-                WeatherEntity weatherEntity = database.weatherDao().loadWeatherByDate(mDateLong);
-                runOnUiThread(new Runnable() {
+                LiveData<WeatherEntity> weatherEntityLiveData = database.weatherDao().loadWeatherByDate(mDateLong);
+                weatherEntityLiveData.observe(DetailActivity.this, new Observer<WeatherEntity>() {
                     @Override
-                    public void run() {
+                    public void onChanged(WeatherEntity weatherEntity) {
                         String dateString = WeatherDateUtils.getFriendlyDateString(DetailActivity.this,weatherEntity.getDate().getTime(),true);
                         dateTv.setText(dateString);
                         String desc = WeatherUtils.getStringForWeatherCondition(DetailActivity.this,weatherEntity.getWeatherId());
@@ -81,10 +82,8 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
                         pressureTv.setText(pressureString);
                     }
                 });
+                    }
 
-            }
-        });
-    }
     Intent createShareForecastIntent(){
 
         mWeatherSummary = dateTv.getText()+" - "+descTv.getText()+" - "+maxTv.getText()+" - "+minTv.getText()+

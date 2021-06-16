@@ -1,5 +1,6 @@
 package com.example.aac;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -16,10 +17,10 @@ import java.util.List;
 public interface WeatherDao {
 
     @Query("Select * from weather ORDER BY date")
-    List<WeatherEntity> loadAllWeather();
+    LiveData<List<WeatherEntity>> loadAllWeather();
 
     @Query("Select * from weather where date = :givenDate")
-    WeatherEntity loadWeatherByDate(long givenDate);
+    LiveData<WeatherEntity> loadWeatherByDate(long givenDate);
 
     @Insert
     void insertWeather(WeatherEntity weatherEntity);

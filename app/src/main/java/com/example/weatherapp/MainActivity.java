@@ -3,6 +3,8 @@ package com.example.weatherapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -81,18 +83,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                         mDb.weatherDao().deleteWeather(weatherEntity);
                     }
                 });
-                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                     @Override
-                     public void run() {
-                         List<WeatherEntity> weatherEntities = mDb.weatherDao().loadAllWeather();
-                         AppExecutors.getInstance().mainThread().execute(new Runnable() {
-                             @Override
-                             public void run() {
-                                 mForeCastAdapter.swapCursor(weatherEntities);
-                             }
-                         });
-                     }
-                 });
         }
     };
 
@@ -129,30 +119,21 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     }
 
     void showData(WeatherDatabase db){
-
-        AppExecutors.getInstance().networkIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<WeatherEntity> weatherEntities = db.weatherDao().loadAllWeather();
-                Log.d(MainActivity.TAG,"Data loading called");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadingIndicator.setVisibility(View.INVISIBLE);
-                        mForeCastAdapter.swapCursor(weatherEntities);
-                        if (weatherEntities!=null && weatherEntities.size() > 0){
-                            showDataView();
-                        }
-                        else {
-                            showErrorView();
-                        }
-
+                final LiveData<List<WeatherEntity>> weathers = db.weatherDao().loadAllWeather();
+                        weathers.observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
+                            @Override
+                            public void onChanged(List<WeatherEntity> weatherEntities) {
+                                loadingIndicator.setVisibility(View.INVISIBLE);
+                                mForeCastAdapter.swapCursor(weatherEntities);
+                                if (weatherEntities!=null && weatherEntities.size() > 0){
+                                    showDataView();
+                                }
+                                else {
+                                    showErrorView();
+                                }
+                            }
+                        });
                     }
-                });
-            }
-        });
-
-    }
 
     private void downloadData(WeatherDatabase db){
         loadingIndicator.setVisibility(View.VISIBLE);
@@ -192,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         super.onStart();
         if (PREFERENCE_HAVE_BEEN_UPDATED){
            downloadData(mDb);
-           showData(mDb);
         }
     }
 
@@ -215,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
             case R.id.action_refresh:
                 mForeCastAdapter.swapCursor(null);
                 downloadData(mDb);
-                showData(mDb);
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();
