@@ -1,13 +1,9 @@
 package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,10 +23,10 @@ import android.widget.Toast;
 
 import com.example.aac.WeatherDatabase;
 import com.example.aac.WeatherEntity;
+import com.example.aac.WeatherViewModel;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.Constants;
-import com.example.utils.FakeDataUtils;
 import com.example.utils.NetworkUtils;
 import com.example.utils.OpenWeatherJsonUtils;
 
@@ -40,7 +35,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -114,13 +108,13 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
         downloadData(mDb);
-        showData(mDb);
+        setupWeatherViewModel();
 
     }
 
-    void showData(WeatherDatabase db){
-                final LiveData<List<WeatherEntity>> weathers = db.weatherDao().loadAllWeather();
-                        weathers.observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
+    void setupWeatherViewModel(){
+        WeatherViewModel weatherViewModel = new ViewModelProvider(MainActivity.this).get(WeatherViewModel.class);
+        weatherViewModel.getWeathersLiveData().observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
                             @Override
                             public void onChanged(List<WeatherEntity> weatherEntities) {
                                 loadingIndicator.setVisibility(View.INVISIBLE);
