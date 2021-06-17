@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.aac.WeatherDatabase;
+import com.example.aac.WeatherDetailViewModel;
+import com.example.aac.WeatherDetailViewModelFactory;
 import com.example.aac.WeatherEntity;
 import com.example.utils.Constants;
 import com.example.utils.WeatherDateUtils;
@@ -62,7 +65,11 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
     void updateView(){
                 WeatherDatabase database = WeatherDatabase.getInstance(DetailActivity.this);
-                LiveData<WeatherEntity> weatherEntityLiveData = database.weatherDao().loadWeatherByDate(mDateLong);
+        WeatherDetailViewModelFactory weatherDetailViewModelFactory = new WeatherDetailViewModelFactory(database,mDateLong);
+        WeatherDetailViewModel weatherDetailViewModel = new ViewModelProvider(DetailActivity.this,weatherDetailViewModelFactory).get(WeatherDetailViewModel.class);
+
+                LiveData<WeatherEntity> weatherEntityLiveData = weatherDetailViewModel.getWeatherEntityLiveData();
+
                 weatherEntityLiveData.observe(DetailActivity.this, new Observer<WeatherEntity>() {
                     @Override
                     public void onChanged(WeatherEntity weatherEntity) {
