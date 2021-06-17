@@ -26,6 +26,6 @@ public class WeatherDetailViewModelFactory extends ViewModelProvider.NewInstance
     @NotNull
     @Override
     public <T extends ViewModel> T create(@NonNull @NotNull Class<T> modelClass) {
-        return super.create(modelClass);
+        return (T) new WeatherDetailViewModel(weatherDatabase,mDate);
     }
 }
