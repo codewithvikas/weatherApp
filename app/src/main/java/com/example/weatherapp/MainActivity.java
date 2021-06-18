@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     TextView errorTextView;
     RecyclerView recyclerView;
 
+    WeatherListViewModel weatherListViewModel;
+
     private static  boolean PREFERENCE_HAVE_BEEN_UPDATED = false;
     private static final int  LOADER_ID = 11;
 
@@ -64,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     public static final int INDEX_COLUMN_MIN = 2;
     public static final int INDEX_COLUMN_ID = 3;
 
-    WeatherDatabase mDb;
 
     ItemTouchHelper.SimpleCallback recyclerViewItemTouchHelper = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
         @Override
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                     @Override
                     public void run() {
                         WeatherEntity weatherEntity = mForeCastAdapter.getWeatherByPosition(viewHolder.getAdapterPosition());
-                        mDb.weatherDao().deleteWeather(weatherEntity);
+
                     }
                 });
         }
@@ -89,10 +90,6 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0);
-        //FakeDataUtils.insertFakeData(this);
-
-         mDb = WeatherDatabase.getInstance(this);
-       // FakeDataUtils.insertFakeDataInRoom(mDb);
 
         recyclerView = findViewById(R.id.forecast_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -123,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         WeatherRepository weatherRepository = WeatherRepository.getInstance(weatherDao,weatherNetworkDataSource,appExecutors);
 
         WeatherListViewModelFactory weatherListViewModelFactory = new WeatherListViewModelFactory(weatherRepository);
-        WeatherListViewModel weatherListViewModel = new ViewModelProvider(MainActivity.this,weatherListViewModelFactory).get(WeatherListViewModel.class);
+        weatherListViewModel = new ViewModelProvider(MainActivity.this,weatherListViewModelFactory).get(WeatherListViewModel.class);
 
         weatherListViewModel.getWeathersLiveData().observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
                             @Override
@@ -140,44 +137,12 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                         });
                     }
 
-    private void downloadData(WeatherDatabase db){
-        loadingIndicator.setVisibility(View.VISIBLE);
-        AppExecutors.getInstance().networkIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                String location = WeatherPreferences.getPreferredWeatherLocation(MainActivity.this);
-
-                URL url = NetworkUtils.buildUrl(location);
-                try {
-                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-                    List<WeatherEntity> weatherEntities = OpenWeatherJsonUtils.getFullWeatherEntitiesFromJson(MainActivity.this,jsonResponse);
-
-                    Log.d(MainActivity.TAG,"Network ops done !!");
-                    if (weatherEntities!=null){
-                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                db.weatherDao().insertAllWeather(weatherEntities);
-                                Log.d(MainActivity.TAG,"Data Insertion called !!");
-                            }
-                        });
-                    }
-                    else {
-                        throw new RuntimeException("Data not downloaded from Network");
-                    }
-
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (PREFERENCE_HAVE_BEEN_UPDATED){
-           downloadData(mDb);
+          mForeCastAdapter.notifyDataSetChanged();
         }
     }
 
@@ -199,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         switch (item.getItemId()){
             case R.id.action_refresh:
                 mForeCastAdapter.swapCursor(null);
-                downloadData(mDb);
+                weatherListViewModel.getWeathersLiveData();
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();

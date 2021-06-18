@@ -18,7 +18,7 @@ public interface WeatherDao {
     LiveData<List<WeatherEntity>> loadAllWeather();
 
     @Query("Select * from weather where date = :givenDate")
-    LiveData<WeatherEntity> loadWeatherByDate(long givenDate);
+    LiveData<WeatherEntity> loadWeatherByDate(Date givenDate);
 
     @Insert
     void insertWeather(WeatherEntity weatherEntity);

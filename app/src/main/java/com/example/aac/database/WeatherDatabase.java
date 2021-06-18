@@ -7,6 +7,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.example.aac.WeatherRepository;
+
 @Database(entities = {WeatherEntity.class},version = 2,exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class WeatherDatabase extends RoomDatabase {
