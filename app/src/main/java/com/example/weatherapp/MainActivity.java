@@ -21,9 +21,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aac.WeatherRepository;
+import com.example.aac.database.WeatherDao;
 import com.example.aac.database.WeatherDatabase;
 import com.example.aac.database.WeatherEntity;
-import com.example.aac.ui.WeatherViewModel;
+import com.example.aac.network.WeatherNetworkDataSource;
+import com.example.aac.ui.WeatherListViewModel;
+import com.example.aac.ui.WeatherListViewModelFactory;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.Constants;
@@ -107,14 +111,21 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
-        downloadData(mDb);
         setupWeatherViewModel();
 
     }
 
     void setupWeatherViewModel(){
-        WeatherViewModel weatherViewModel = new ViewModelProvider(MainActivity.this).get(WeatherViewModel.class);
-        weatherViewModel.getWeathersLiveData().observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
+
+        WeatherDao weatherDao = WeatherDatabase.getInstance(getApplicationContext()).weatherDao();
+        AppExecutors appExecutors = AppExecutors.getInstance();
+        WeatherNetworkDataSource weatherNetworkDataSource = WeatherNetworkDataSource.getInstance(getApplicationContext(),appExecutors);
+        WeatherRepository weatherRepository = WeatherRepository.getInstance(weatherDao,weatherNetworkDataSource,appExecutors);
+
+        WeatherListViewModelFactory weatherListViewModelFactory = new WeatherListViewModelFactory(weatherRepository);
+        WeatherListViewModel weatherListViewModel = new ViewModelProvider(MainActivity.this,weatherListViewModelFactory).get(WeatherListViewModel.class);
+
+        weatherListViewModel.getWeathersLiveData().observe(MainActivity.this, new Observer<List<WeatherEntity>>() {
                             @Override
                             public void onChanged(List<WeatherEntity> weatherEntities) {
                                 loadingIndicator.setVisibility(View.INVISIBLE);
