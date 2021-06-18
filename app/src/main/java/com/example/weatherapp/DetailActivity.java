@@ -16,7 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.aac.WeatherRepository;
 import com.example.aac.database.WeatherDatabase;
+import com.example.aac.network.WeatherNetworkDataSource;
 import com.example.aac.ui.WeatherDetailViewModel;
 import com.example.aac.ui.WeatherDetailViewModelFactory;
 import com.example.aac.database.WeatherEntity;
@@ -24,13 +26,15 @@ import com.example.utils.Constants;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;
 
+import java.util.Date;
+
 public class DetailActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String FORECAST_SHARE_HASHTAG = "#SunshineApp";
 
     TextView dateTv,descTv,maxTv,minTv,humidityTv,windTv,pressureTv;
     String mWeatherSummary;
-    private  long mDateLong;
+    private Date mDateLong;
 
     private static boolean PREFERENCE_HAVE_BEEN_UPDATE = false;
 
@@ -47,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
        windTv = findViewById(R.id.tv_wind);
        pressureTv = findViewById(R.id.tv_pressure);
 
-        mDateLong = getIntent().getLongExtra(Constants.DATE_EXTRA,0);
+        mDateLong = new Date(getIntent().getLongExtra(Constants.DATE_EXTRA,0));
         updateView();
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 
@@ -64,8 +68,13 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
     }
 
     void updateView(){
-                WeatherDatabase database = WeatherDatabase.getInstance(DetailActivity.this);
-        WeatherDetailViewModelFactory weatherDetailViewModelFactory = new WeatherDetailViewModelFactory(database,mDateLong);
+                WeatherDatabase database = WeatherDatabase.getInstance(getApplicationContext());
+                AppExecutors appExecutors = AppExecutors.getInstance();
+                WeatherNetworkDataSource weatherNetworkDataSource = WeatherNetworkDataSource.getInstance(getApplicationContext(),appExecutors);
+                WeatherRepository repository = WeatherRepository.getInstance(database.weatherDao(),weatherNetworkDataSource,appExecutors);
+
+        WeatherDetailViewModelFactory weatherDetailViewModelFactory = new WeatherDetailViewModelFactory(repository,mDateLong);
+
         WeatherDetailViewModel weatherDetailViewModel = new ViewModelProvider(DetailActivity.this,weatherDetailViewModelFactory).get(WeatherDetailViewModel.class);
 
                 LiveData<WeatherEntity> weatherEntityLiveData = weatherDetailViewModel.getWeatherEntityLiveData();

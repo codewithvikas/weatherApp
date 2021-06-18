@@ -67,4 +67,8 @@ public class WeatherRepository {
         initializeData();
         return weatherDao.loadAllWeather();
     }
+    public LiveData<WeatherEntity> getWeatherByDate(Date date){
+        initializeData();
+        return weatherDao.loadWeatherByDate(date);
+    }
 }
