@@ -21,9 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.aac.WeatherDatabase;
-import com.example.aac.WeatherEntity;
-import com.example.aac.WeatherViewModel;
+import com.example.aac.database.WeatherDatabase;
+import com.example.aac.database.WeatherEntity;
+import com.example.aac.ui.WeatherViewModel;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.Constants;

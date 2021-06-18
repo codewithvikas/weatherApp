@@ -16,10 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.example.aac.WeatherDatabase;
-import com.example.aac.WeatherDetailViewModel;
-import com.example.aac.WeatherDetailViewModelFactory;
-import com.example.aac.WeatherEntity;
+import com.example.aac.database.WeatherDatabase;
+import com.example.aac.ui.WeatherDetailViewModel;
+import com.example.aac.ui.WeatherDetailViewModelFactory;
+import com.example.aac.database.WeatherEntity;
 import com.example.utils.Constants;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;

@@ -2,9 +2,8 @@ package com.example.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SearchRecentSuggestionsProvider;
 
-import com.example.aac.WeatherEntity;
+import com.example.aac.database.WeatherEntity;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 

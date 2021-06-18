@@ -1,4 +1,4 @@
-package com.example.aac;
+package com.example.aac.database;
 
 import androidx.room.Entity;
 import androidx.room.Ignore;
