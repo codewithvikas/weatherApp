@@ -1,4 +1,4 @@
-package com.example.aac;
+package com.example.aac.database;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,8 +7,6 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
-
-import com.example.data.WeatherContract;
 
 import java.util.Date;
 import java.util.List;
@@ -32,4 +30,7 @@ public interface WeatherDao {
 
     @Delete
     void deleteWeather(WeatherEntity weatherEntity);
+
+    @Query("DELETE from weather WHERE date < :date")
+    void deleteOldWeather(Date date);
 }

@@ -1,9 +1,10 @@
-package com.example.aac;
+package com.example.aac.ui;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Date;
+import com.example.aac.database.WeatherDatabase;
+import com.example.aac.database.WeatherEntity;
 
 public class WeatherDetailViewModel extends ViewModel {
 

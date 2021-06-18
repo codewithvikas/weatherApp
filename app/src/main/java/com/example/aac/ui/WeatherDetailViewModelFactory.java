@@ -1,9 +1,11 @@
-package com.example.aac;
+package com.example.aac.ui;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.aac.database.WeatherDatabase;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -3,10 +3,8 @@ package com.example.utils;
 import android.content.ContentValues;
 import android.content.Context;
 
-import androidx.room.RoomDatabase;
-
-import com.example.aac.WeatherDatabase;
-import com.example.aac.WeatherEntity;
+import com.example.aac.database.WeatherDatabase;
+import com.example.aac.database.WeatherEntity;
 import com.example.data.WeatherContract;
 
 import java.util.ArrayList;

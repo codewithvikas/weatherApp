@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.aac.WeatherEntity;
+import com.example.aac.database.WeatherEntity;
 import com.example.utils.WeatherDateUtils;
 import com.example.utils.WeatherUtils;
 
