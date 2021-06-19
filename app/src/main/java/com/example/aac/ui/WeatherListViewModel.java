@@ -32,4 +32,8 @@ public class WeatherListViewModel extends ViewModel {
     public void deleteWeather(WeatherEntity weatherEntity) {
         weatherRepository.deleteWeather(weatherEntity);
     }
+
+    public void refreshWeathers() {
+       weatherRepository.refreshWeathers();
+    }
 }

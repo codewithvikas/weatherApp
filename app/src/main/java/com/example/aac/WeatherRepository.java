@@ -40,7 +40,8 @@ public class WeatherRepository {
                     @Override
                     public void run() {
                         Date date = new Date(WeatherDateUtils.getNormalizedUtcDateForToday());
-                       weatherDao.deleteOldWeather(date);
+                       //weatherDao.deleteOldWeather(date);
+                       weatherDao.deleteAllWeather();
                         weatherDao.insertAllWeather(weatherEntities);
                     }
                 });
@@ -74,5 +75,9 @@ public class WeatherRepository {
 
     public void deleteWeather(WeatherEntity weatherEntity) {
         weatherDao.deleteWeather(weatherEntity);
+    }
+
+    public void refreshWeathers(){
+        weatherNetworkDataSource.fetchWeather();
     }
 }

@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         switch (item.getItemId()){
             case R.id.action_refresh:
                 mForeCastAdapter.swapCursor(null);
-                weatherListViewModel.getWeathersLiveData();
+                weatherListViewModel.refreshWeathers();
                 return true;
             case R.id.action_open_map:
                 openMapInLocation();
