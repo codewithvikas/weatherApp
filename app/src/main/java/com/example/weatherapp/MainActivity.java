@@ -31,14 +31,9 @@ import com.example.aac.ui.WeatherListViewModelFactory;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.Constants;
-import com.example.utils.NetworkUtils;
-import com.example.utils.OpenWeatherJsonUtils;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ForeCastAdapter.ItemClickHandler, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -51,7 +46,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     WeatherListViewModel weatherListViewModel;
 
-    private static  boolean PREFERENCE_HAVE_BEEN_UPDATED = false;
+    private static  boolean UNIT_HAVE_BEEN_UPDATED = false;
+    private static boolean LOCATION_HAVE_BEEN_UPDATED = false;
+
     private static final int  LOADER_ID = 11;
 
     public static final String[] projection = {
@@ -141,9 +138,16 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     @Override
     protected void onStart() {
         super.onStart();
-        if (PREFERENCE_HAVE_BEEN_UPDATED){
-          mForeCastAdapter.notifyDataSetChanged();
+        if (LOCATION_HAVE_BEEN_UPDATED){
+            LOCATION_HAVE_BEEN_UPDATED = false;
+            UNIT_HAVE_BEEN_UPDATED = false;
+            weatherListViewModel.refreshWeathers();
         }
+        else if (UNIT_HAVE_BEEN_UPDATED){
+          mForeCastAdapter.notifyDataSetChanged();
+          UNIT_HAVE_BEEN_UPDATED = false;
+        }
+
     }
 
     @Override
@@ -216,6 +220,11 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        PREFERENCE_HAVE_BEEN_UPDATED = true;
+        if (key.equals(getString(R.string.pref_location_key))){
+            LOCATION_HAVE_BEEN_UPDATED = true;
+        }
+        if (key.equals(getString(R.string.pref_units_key))){
+            UNIT_HAVE_BEEN_UPDATED = true;
+        }
     }
 }
