@@ -28,4 +28,8 @@ public class WeatherListViewModel extends ViewModel {
     public LiveData<List<WeatherEntity>> getWeathersLiveData() {
         return weathersLiveData;
     }
+
+    public void deleteWeather(WeatherEntity weatherEntity) {
+        weatherRepository.deleteWeather(weatherEntity);
+    }
 }

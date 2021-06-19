@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                     @Override
                     public void run() {
                         WeatherEntity weatherEntity = mForeCastAdapter.getWeatherByPosition(viewHolder.getAdapterPosition());
-
+                        weatherListViewModel.deleteWeather(weatherEntity);
                     }
                 });
         }

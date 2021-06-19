@@ -71,4 +71,8 @@ public class WeatherRepository {
         initializeData();
         return weatherDao.loadWeatherByDate(date);
     }
+
+    public void deleteWeather(WeatherEntity weatherEntity) {
+        weatherDao.deleteWeather(weatherEntity);
+    }
 }
