@@ -33,4 +33,7 @@ public interface WeatherDao {
 
     @Query("DELETE from weather WHERE date < :date")
     void deleteOldWeather(Date date);
+
+    @Query("DELETE  from weather")
+    void deleteAllWeather();
 }
