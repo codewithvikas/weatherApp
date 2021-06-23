@@ -1,6 +1,7 @@
 package com.example.aac.network;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -10,7 +11,6 @@ import com.example.data.WeatherPreferences;
 import com.example.utils.NetworkUtils;
 import com.example.utils.OpenWeatherJsonUtils;
 import com.example.weatherapp.AppExecutors;
-import com.example.weatherapp.MainActivity;
 
 import org.json.JSONException;
 
@@ -48,7 +48,7 @@ public class WeatherNetworkDataSource {
         return mDownloadedWeatherForecasts;
     }
 
-    public void fetchWeather(){
+     void fetchWeather(){
         Log.d(LOG_TAG,"Fetch weather started");
         mExecutors.networkIO().execute(new Runnable() {
             @Override
@@ -72,5 +72,11 @@ public class WeatherNetworkDataSource {
                 }
             }
         });
+    }
+
+    public void startWeatherService(){
+        Intent weatherServiceIntent = new Intent(mContext, WeatherIntentService.class);
+        weatherServiceIntent.setAction(WeatherTasks.ACTION_UPDATE_LOCATION);
+        mContext.startService(weatherServiceIntent);
     }
 }

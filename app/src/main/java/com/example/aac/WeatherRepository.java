@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer;
 import com.example.aac.database.WeatherDao;
 import com.example.aac.database.WeatherEntity;
 import com.example.aac.network.WeatherNetworkDataSource;
-import com.example.utils.NetworkUtils;
 import com.example.utils.WeatherDateUtils;
 import com.example.weatherapp.AppExecutors;
 
@@ -26,7 +25,7 @@ public class WeatherRepository {
     private final WeatherNetworkDataSource weatherNetworkDataSource;
     private final AppExecutors executors;
 
-    private boolean mInitialized = false;
+    private boolean mDataFetched = false;
     private WeatherRepository(WeatherDao weatherDao, WeatherNetworkDataSource weatherNetworkDataSource, AppExecutors executors){
 
         this.weatherDao = weatherDao;
@@ -49,10 +48,10 @@ public class WeatherRepository {
         });
     }
 
-    private synchronized void initializeData(){
-        if (mInitialized)return;
-        mInitialized = true;
-        weatherNetworkDataSource.fetchWeather();
+    private synchronized void fetchDataFromNetwork(){
+        if (mDataFetched)return;
+        mDataFetched = true;
+        startFetchDataService();
     }
     public synchronized static WeatherRepository getInstance(WeatherDao weatherDao,WeatherNetworkDataSource weatherNetworkDataSource,AppExecutors executors){
         Log.d(LOG_TAG,"Getting the repository");
@@ -65,11 +64,11 @@ public class WeatherRepository {
         return sInstance;
     }
     public LiveData<List<WeatherEntity>> getWeatherList(){
-        initializeData();
-        return weatherDao.loadAllWeather();
+        fetchDataFromNetwork();  // Download data from internet
+        return weatherDao.loadAllWeather();  // update local database
     }
     public LiveData<WeatherEntity> getWeatherByDate(Date date){
-        initializeData();
+        fetchDataFromNetwork();
         return weatherDao.loadWeatherByDate(date);
     }
 
@@ -78,6 +77,9 @@ public class WeatherRepository {
     }
 
     public void refreshWeathers(){
-        weatherNetworkDataSource.fetchWeather();
+        weatherNetworkDataSource.startWeatherService();
+    }
+    public void startFetchDataService(){
+        weatherNetworkDataSource.startWeatherService();
     }
 }

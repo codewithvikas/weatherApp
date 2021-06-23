@@ -25,6 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="com.example.aac.network.WeatherIntentService"
+            android:exported="false"/>
         <provider
             android:authorities="com.example.weather.data"
             android:name="com.example.data.WeatherProvider"
