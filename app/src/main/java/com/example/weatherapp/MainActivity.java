@@ -31,6 +31,7 @@ import com.example.aac.ui.WeatherListViewModelFactory;
 import com.example.data.WeatherContract;
 import com.example.data.WeatherPreferences;
 import com.example.utils.Constants;
+import com.example.utils.NotificationUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
                                 mForeCastAdapter.swapCursor(weatherEntities);
                                 if (weatherEntities!=null && weatherEntities.size() > 0){
                                     showDataView();
+                                    NotificationUtil.remindUserWeatherListUpdate(MainActivity.this);
                                 }
                                 else {
                                     showErrorView();
