@@ -13,16 +13,66 @@ import android.graphics.BitmapFactory;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.aac.network.WeatherIntentService;
+import com.example.aac.network.WeatherTasks;
 import com.example.weatherapp.MainActivity;
 import com.example.weatherapp.R;
 
 public class NotificationUtil {
 
     private static final int WEATHER_LIST_PENDING_INTENT_ID = 34523;
+
+    private static final int IGNORE_PENDING_INTENT_ID = 12345;
+    private static final int SHARE_PENDING_INTENT_ID = 223311;
+
     private static final int WEATHER_LIST_NOTIFICATION_ID = 12567;
     private static final String WEATHER_LIST_NOTIFICATION_CHANNEL_ID = "weather-list-notification-channel";
 
 
+    private static NotificationCompat.Action ignoreAction(Context context){
+        Intent ignoreIntent = new Intent(context, WeatherIntentService.class);
+        ignoreIntent.setAction(WeatherTasks.ACTION_CLEAR_NOTIFICATION);
+
+        PendingIntent ignorePendingIntent = PendingIntent.getService(
+                context,
+                IGNORE_PENDING_INTENT_ID,
+                ignoreIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Action action = new NotificationCompat.Action(
+                R.drawable.ic_close_24,
+                "No Thanks",
+                ignorePendingIntent
+        );
+        return action;
+    }
+
+    private static NotificationCompat.Action shareAction(Context context){
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT,"This is something i want to share with you !!");
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent,"Select An app to share");
+
+        PendingIntent sharePendingIntent = PendingIntent.getActivity(
+                context,
+                SHARE_PENDING_INTENT_ID,
+                shareIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+        NotificationCompat.Action shareAction = new NotificationCompat.Action(
+                R.drawable.ic_share_24,
+                "Share Please",
+                sharePendingIntent
+        );
+        return shareAction;
+    }
+
+
+    public static void clearAllNotification(Context context){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
     public static void remindUserWeatherListUpdate(Context context){
         //Create Notification
         //Create Notification channel
@@ -49,6 +99,8 @@ public class NotificationUtil {
                                             context.getString(R.string.weather_notification_body)))
                                     .setDefaults(Notification.DEFAULT_VIBRATE)
                                     .setContentIntent(contentIntent(context))
+                                    .addAction(ignoreAction(context))
+                                    .addAction(shareAction(context))
                                     .setAutoCancel(true);
 
         notificationManager.notify(WEATHER_LIST_NOTIFICATION_ID,notificationBuilder.build());
