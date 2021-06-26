@@ -1,6 +1,7 @@
 package com.example.weatherapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,6 +16,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -125,16 +128,19 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mChargingReceiver,mChargingIntentFilter);
+        BatteryManager  batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
+        showCharging(batteryManager.isCharging());
+        //registerReceiver(mChargingReceiver,mChargingIntentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mChargingReceiver);
+        //unregisterReceiver(mChargingReceiver);
     }
 
     void setupWeatherViewModel(){
