@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     RecyclerView recyclerView;
 
     WeatherListViewModel weatherListViewModel;
+
+    IntentFilter mChargingIntentFilter;
+    BroadcastReceiver mChargingReceiver;
 
     private static  boolean UNIT_HAVE_BEEN_UPDATED = false;
     private static boolean LOCATION_HAVE_BEEN_UPDATED = false;
@@ -108,6 +113,28 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
 
         setupWeatherViewModel();
 
+
+        //Broadcast receiver
+
+        mChargingIntentFilter = new IntentFilter();
+        mChargingIntentFilter.addAction(Intent.ACTION_POWER_CONNECTED);
+        mChargingIntentFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+
+        mChargingReceiver = new ChargingBroadcastReceiver();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mChargingReceiver,mChargingIntentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mChargingReceiver);
     }
 
     void setupWeatherViewModel(){
@@ -227,6 +254,25 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         }
         if (key.equals(getString(R.string.pref_units_key))){
             UNIT_HAVE_BEEN_UPDATED = true;
+        }
+    }
+
+    //Broadcast receiver
+
+    void showCharging(boolean isCharging){
+        if (isCharging){
+            Toast.makeText(MainActivity.this,"Mobile is Charging !!",Toast.LENGTH_SHORT).show();
+            weatherListViewModel.refreshWeathers();
+        }
+
+    }
+    private class ChargingBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                boolean isCharging  = action.equals(Intent.ACTION_POWER_CONNECTED);
+                showCharging(isCharging);
         }
     }
 }
