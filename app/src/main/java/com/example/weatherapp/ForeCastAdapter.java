@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -47,17 +48,22 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         Date date = weatherEntity.getDate();
         String dateString = WeatherDateUtils.getFriendlyDateString(mContext,date.getTime(),false);
 
+        holder.dateTextView.setText(dateString);
+
         int weatherId = weatherEntity.getWeatherId();
         String description = WeatherUtils.getStringForWeatherCondition(mContext,weatherId);
+        holder.descTextView.setText(description);
 
         double highInCelsius =  weatherEntity.getMax();
+        String highTemp = WeatherUtils.formatTemperature(mContext,highInCelsius);
+        holder.tempHighTextView.setText(highTemp);
+
         double lowInCelsius = weatherEntity.getMin();
-        String formatHighLowTemp = WeatherUtils.formatHighLows(mContext,highInCelsius,lowInCelsius);
-        double pressure = weatherEntity.getPressure();
+        String lowTemp = WeatherUtils.formatTemperature(mContext,lowInCelsius);
+        holder.tempLowTestView.setText(lowTemp);
 
-        String weatherSummary  = dateString +" - "+ description +" - "+formatHighLowTemp+" - "+pressure;
-
-        holder.dataTextView.setText(weatherSummary);
+        int iconId = WeatherUtils.getArtResourceForWeatherCondition(weatherId);
+        holder.weatherIconImageView.setImageResource(iconId);
     }
 
     @Override
@@ -81,15 +87,25 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
 
     class ForecastItemHolder extends RecyclerView.ViewHolder{
 
-        TextView dataTextView;
+        TextView dateTextView;
+        ImageView weatherIconImageView;
+        TextView descTextView;
+        TextView tempHighTextView;
+        TextView tempLowTestView;
+
         public ForecastItemHolder(@NonNull @org.jetbrains.annotations.NotNull View itemView) {
             super(itemView);
-            dataTextView = itemView.findViewById(R.id.tv_weather_data);
+
+            dateTextView = itemView.findViewById(R.id.tv_weather_date);
+            weatherIconImageView = itemView.findViewById(R.id.weather_icon_iv);
+            descTextView = itemView.findViewById(R.id.desc_tv);
+            tempHighTextView = itemView.findViewById(R.id.tv_temp_high_list);
+            tempLowTestView = itemView.findViewById(R.id.tv_temp_low_list);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     long date = mWeatherData.get(getAdapterPosition()).getDate().getTime();
-
                     itemClickHandler.onClick(date);
                 }
             });
