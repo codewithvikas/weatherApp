@@ -5,7 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -33,7 +37,8 @@
         app:layout_constraintLeft_toRightOf="@id/weather_icon_iv"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"/>
+        android:layout_marginStart="16dp"
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/desc_tv"
@@ -42,7 +47,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="@id/tv_weather_date"
         app:layout_constraintTop_toBottomOf="@id/guideline"
-        tools:text="Sunny"/>
+        tools:text="Sunny"
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/tv_temp_low_list"

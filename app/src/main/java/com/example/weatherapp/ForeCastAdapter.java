@@ -61,6 +61,9 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         double lowInCelsius = weatherEntity.getMin();
         String lowTemp = WeatherUtils.formatTemperature(mContext,lowInCelsius);
         holder.tempLowTestView.setText(lowTemp);
+
+        int iconId = WeatherUtils.getArtResourceForWeatherCondition(weatherId);
+        holder.weatherIconImageView.setImageResource(iconId);
     }
 
     @Override
