@@ -21,6 +21,9 @@ import java.util.List;
 public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.ForecastItemHolder> {
 
 
+    private static final int VIEW_TYPE_TODAY = 1;
+    private static final int VIEW_TYPE_FUTURE = 2;
+
     ItemClickHandler itemClickHandler;
     Context mContext;
 
@@ -36,9 +39,20 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
     @org.jetbrains.annotations.NotNull
     @Override
     public ForecastItemHolder onCreateViewHolder(@NonNull @org.jetbrains.annotations.NotNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.weather_list_item,parent,false);
-        view.setFocusable(true);
-        return new ForecastItemHolder(view);
+        if (viewType ==VIEW_TYPE_TODAY){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.today_weather_list_item,parent,false);
+            view.setFocusable(true);
+            return new ForecastItemHolder(view);
+        }
+        else if (viewType == VIEW_TYPE_FUTURE){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.weather_list_item,parent,false);
+            view.setFocusable(true);
+            return new ForecastItemHolder(view);
+        }
+        else {
+            throw new IllegalArgumentException("Wrong View Type");
+        }
+
     }
 
     @Override
@@ -73,6 +87,17 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
         }
         return 0;
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mContext.getResources().getBoolean(R.bool.use_today_layout) && position == 0){
+            return  VIEW_TYPE_TODAY;
+        }
+        else {
+            return VIEW_TYPE_FUTURE;
+        }
+    }
+
     public WeatherEntity getWeatherByPosition(int position){
         if (mWeatherData!=null){
             return mWeatherData.get(position);
