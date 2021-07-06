@@ -122,7 +122,7 @@ public class ForeCastAdapter extends RecyclerView.Adapter<ForeCastAdapter.Foreca
             super(itemView);
 
             dateTextView = itemView.findViewById(R.id.tv_weather_date);
-            weatherIconImageView = itemView.findViewById(R.id.weather_icon_iv);
+            weatherIconImageView = itemView.findViewById(R.id.weather_detail_icon_iv);
             descTextView = itemView.findViewById(R.id.desc_tv);
             tempHighTextView = itemView.findViewById(R.id.tv_temp_high_list);
             tempLowTestView = itemView.findViewById(R.id.tv_temp_low_list);

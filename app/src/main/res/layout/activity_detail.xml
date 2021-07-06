@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".DetailActivity"
     android:padding="8dp">
 
@@ -14,41 +13,125 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.AppCompat.Large"
-        tools:text="Tuesday, June 8"/>
+        tools:text="Tuesday, June 8"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="48dp"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/divider1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+    <ImageView
+        android:id="@+id/weather_detail_icon_iv"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_date"
+        app:layout_constraintRight_toRightOf="@id/divider1"
+        tools:src="@drawable/art_fog"
+        android:layout_marginTop="16dp"/>
+
     <TextView
         android:id="@+id/tv_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.AppCompat.Large"
-        tools:text="Rainy"/>
+        tools:text="Rainy"
+        app:layout_constraintLeft_toLeftOf="@id/weather_detail_icon_iv"
+        app:layout_constraintRight_toRightOf="@id/weather_detail_icon_iv"
+        app:layout_constraintTop_toBottomOf="@id/weather_detail_icon_iv"/>
     <TextView
         android:id="@+id/tv_temp_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Large"
-        tools:text="19\u00b0"/>
+        style="@style/TextAppearance.AppCompat.Display3"
+        tools:text="19\u00b0"
+        app:layout_constraintLeft_toRightOf="@id/divider1"
+        app:layout_constraintTop_toTopOf="@id/weather_detail_icon_iv"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/weather_detail_icon_iv"/>
     <TextView
         android:id="@+id/tv_temp_low"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Large"
-        tools:text="3\u00b0"/>
+        style="@style/TextAppearance.AppCompat.Display1"
+        tools:text="3\u00b0"
+        app:layout_constraintTop_toBottomOf="@id/tv_temp_high"
+        app:layout_constraintRight_toRightOf="@id/tv_temp_high"
+        app:layout_constraintLeft_toLeftOf="@id/tv_temp_high"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_description"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/extra_divider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.33"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/divider2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+    <TextView
+        android:id="@+id/tv_humidity_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/extra_divider"
+        app:layout_constraintTop_toBottomOf="@id/divider2"
+        android:text="@string/humidity_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_marginTop="48dp"/>
     <TextView
         android:id="@+id/tv_humidity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Large"
-        tools:text="18%"/>
+        style="@style/TextAppearance.AppCompat.Subhead"
+        tools:text="18%"
+        app:layout_constraintLeft_toRightOf="@id/extra_divider"
+        app:layout_constraintTop_toBottomOf="@id/divider2"
+        android:layout_marginTop="48dp"/>
+
+    <TextView
+        android:id="@+id/tv_pressure_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintTop_toBottomOf="@id/tv_humidity_label"
+        app:layout_constraintLeft_toLeftOf="@id/tv_humidity_label"
+        android:layout_marginTop="48dp"/>
+
     <TextView
         android:id="@+id/tv_pressure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Large"
-        tools:text="15Hpa"/>
+        style="@style/TextAppearance.AppCompat.Subhead"
+        tools:text="15hPa"
+        app:layout_constraintLeft_toLeftOf="@id/tv_humidity"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_pressure_label"
+        android:layout_marginTop="48dp"/>
+
+    <TextView
+        android:id="@+id/tv_wind_label"
+        android:text="@string/wind_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintLeft_toLeftOf="@id/tv_pressure_label"
+        app:layout_constraintTop_toBottomOf="@id/tv_pressure_label"
+        android:layout_marginTop="48dp"/>
     <TextView
         android:id="@+id/tv_wind"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Large"
-        tools:text="25 km/h NW"/>
-</LinearLayout>
+        style="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintLeft_toLeftOf="@id/tv_pressure"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_wind_label"
+        tools:text="25 km/h NW"
+        android:layout_marginTop="48dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

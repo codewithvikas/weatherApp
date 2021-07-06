@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.aac.WeatherRepository;
@@ -34,6 +35,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
 
     TextView dateTv,descTv,maxTv,minTv,humidityTv,windTv,pressureTv;
     String mWeatherSummary;
+    ImageView weatherIconLarge;
     private Date mDateLong;
 
     private static boolean PREFERENCE_HAVE_BEEN_UPDATE = false;
@@ -50,6 +52,7 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
        humidityTv = findViewById(R.id.tv_humidity);
        windTv = findViewById(R.id.tv_wind);
        pressureTv = findViewById(R.id.tv_pressure);
+       weatherIconLarge = findViewById(R.id.weather_detail_icon_iv);
 
         mDateLong = new Date(getIntent().getLongExtra(Constants.DATE_EXTRA,0));
         updateView();
@@ -96,6 +99,8 @@ public class DetailActivity extends AppCompatActivity implements SharedPreferenc
                         windTv.setText(windString);
                         String pressureString = getString(R.string.format_pressure,weatherEntity.getPressure());
                         pressureTv.setText(pressureString);
+                        int weatherRes = WeatherUtils.getArtResourceForWeatherCondition(weatherEntity.getWeatherId());
+                        weatherIconLarge.setImageResource(weatherRes);
                     }
                 });
                     }
