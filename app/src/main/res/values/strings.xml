@@ -150,6 +150,9 @@
     <string name="weather_notification_title">Weather List Notification</string>
     <string name="weather_notification_massage">This is A just an example message of weather list</string>
     <string name="weather_notification_body">This is a dummy body of notification. More detail will be coming soon.</string>
+    <string name="humidity_label">Humidity</string>
+    <string name="pressure_label">Pressure</string>
+    <string name="wind_label">Wind</string>
     <!-- - - - - - - - - - - - - - -->
     <!--NONE-->
 </resources>
