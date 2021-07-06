@@ -134,13 +134,13 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
         super.onResume();
         BatteryManager  batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
         showCharging(batteryManager.isCharging());
-        //registerReceiver(mChargingReceiver,mChargingIntentFilter);
+        registerReceiver(mChargingReceiver,mChargingIntentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //unregisterReceiver(mChargingReceiver);
+        unregisterReceiver(mChargingReceiver);
     }
 
     void setupWeatherViewModel(){
@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     protected void onDestroy() {
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
     @Override
@@ -268,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements ForeCastAdapter.I
     void showCharging(boolean isCharging){
         if (isCharging){
             Toast.makeText(MainActivity.this,"Mobile is Charging !!",Toast.LENGTH_SHORT).show();
-            weatherListViewModel.refreshWeathers();
+            //weatherListViewModel.refreshWeathers();
         }
 
     }
