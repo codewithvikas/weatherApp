@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    style="@style/forecast_list_item_layout">
+    style="@style/forecast_list_item_layout"
+    android:background="@drawable/touch_selector">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
