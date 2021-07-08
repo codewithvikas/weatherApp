@@ -16,4 +16,22 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
+    <style name="extra_weather_details_layout_style">
+        <item name="android:background">@color/detail_accent_pane_background</item>
+        <item name="android:paddingBottom">@dimen/forecast_detail_vertical_padding</item>
+        <item name="android:paddingTop">@dimen/forecast_detail_vertical_padding</item>
+        <item name="paddingStart">@dimen/forecast_detail_horizontal_padding</item>
+        <item name="paddingEnd">@dimen/forecast_detail_horizontal_padding</item>
+    </style>
+    <style name="extra_weather_detail_label_style">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/detail_accent_label</item>
+    </style>
+    
+    <style name="forecast_list_item_layout">
+        <item name="android:paddingStart">@dimen/list_item_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/list_item_padding_horizontal</item>
+        <item name="android:paddingBottom">@dimen/list_item_padding_vertical</item>
+        <item name="android:paddingTop">@dimen/list_item_padding_vertical</item>
+    </style>
 </resources>
