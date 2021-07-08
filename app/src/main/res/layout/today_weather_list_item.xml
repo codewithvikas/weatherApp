@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
+    android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
+    android:background="@color/colorPrimary">
 
     <TextView
         android:id="@+id/tv_weather_date"

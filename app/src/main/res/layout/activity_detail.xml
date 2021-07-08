@@ -85,7 +85,8 @@
         app:layout_constraintTop_toBottomOf="@id/divider2"
         android:text="@string/humidity_label"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp"
+        style="@style/extra_weather_detail_label_style"/>
     <TextView
         android:id="@+id/tv_humidity"
         android:layout_width="wrap_content"
@@ -104,7 +105,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintTop_toBottomOf="@id/tv_humidity_label"
         app:layout_constraintLeft_toLeftOf="@id/tv_humidity_label"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp"
+        style="@style/extra_weather_detail_label_style"/>
 
     <TextView
         android:id="@+id/tv_pressure"
@@ -124,7 +126,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintLeft_toLeftOf="@id/tv_pressure_label"
         app:layout_constraintTop_toBottomOf="@id/tv_pressure_label"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp"
+        style="@style/extra_weather_detail_label_style"/>
     <TextView
         android:id="@+id/tv_wind"
         android:layout_width="wrap_content"
